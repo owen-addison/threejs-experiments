@@ -46,7 +46,7 @@ void main() {
     float n = noise(vec3(pos, u_time * 0.1));
 
     // Use the noise value to mix between two colors
-    color = mix(vec3(0.2, 0.0, 0.5), vec3(0.8, 0.7, 0.0), n);
+    color = mix(vec3(1.0, 1.0, 1.0), vec3(0.0, 0.0, 0.0), n);
 
     gl_FragColor = vec4(color, 1.0);
 }
