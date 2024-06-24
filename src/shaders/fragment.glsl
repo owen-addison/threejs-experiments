@@ -4,6 +4,8 @@ uniform float u_noiseScale;
 uniform float u_noiseSpeed;
 uniform int u_octaves;
 uniform float u_persistence;
+uniform vec3 u_colorA;  // New uniform for the first color
+uniform vec3 u_colorB;  // New uniform for the second color
 varying vec2 vUv;
 
 // Simplex 3D Noise
@@ -91,16 +93,15 @@ float fbm(vec3 x) {
 }
 
 void main() {
-    vec2 st = gl_FragCoord.xy/u_resolution.xy;
-    st.x *= u_resolution.x/u_resolution.y;
-
+    vec2 st = vUv; // Use vUv instead of gl_FragCoord.xy/u_resolution.xy
+    
     vec3 color = vec3(0.0);
 
     // Use fbm with controllable scale, speed, and octaves
     float n = fbm(vec3(st * u_noiseScale, u_time * u_noiseSpeed));
 
-    // Use the noise value to mix between two colors
-    color = mix(vec3(0.2, 0.0, 0.5), vec3(0.8, 0.7, 0.0), n);
+    // Use the noise value to mix between the two color uniforms
+    color = mix(u_colorA, u_colorB, n);
 
     gl_FragColor = vec4(color, 1.0);
 }
