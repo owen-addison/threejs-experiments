@@ -1,8 +1,9 @@
 import * as THREE from 'three';
+import { GUI } from 'dat.gui'; // You may need to install this: npm install dat.gui
 import vertexShader from './shaders/vertex.glsl?raw';
 import fragmentShader from './shaders/fragment.glsl?raw';
 
-let scene, camera, renderer, plane, uniforms;
+let scene, camera, renderer, plane, uniforms, gui;
 
 function init() {
   scene = new THREE.Scene();
@@ -11,36 +12,38 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // Create a plane that fills the screen
   const geometry = new THREE.PlaneGeometry(2, 2);
 
-  // Set up uniforms for the shader
   uniforms = {
     u_time: { value: 0 },
     u_resolution: { value: new THREE.Vector2() },
+    u_noiseScale: { value: 5.0 },
+    u_noiseSpeed: { value: 0.2 },
+    u_octaves: { value: 5 },
+    u_persistence: { value: 0.5 },
   };
 
-  // Create shader material
   const material = new THREE.ShaderMaterial({
     uniforms: uniforms,
     vertexShader: vertexShader,
     fragmentShader: fragmentShader,
   });
 
-  const program = material.program;
-  if (program) {
-    const vertexErrors = renderer.getContext().getShaderInfoLog(program.getVertexShader());
-    const fragmentErrors = renderer.getContext().getShaderInfoLog(program.getFragmentShader());
-
-    if (vertexErrors) console.error('Vertex shader errors:\n', vertexErrors);
-    if (fragmentErrors) console.error('Fragment shader errors:\n', fragmentErrors);
-  }
-
   plane = new THREE.Mesh(geometry, material);
   scene.add(plane);
 
   onWindowResize();
   window.addEventListener('resize', onWindowResize, false);
+
+  setupGUI();
+}
+
+function setupGUI() {
+  gui = new GUI();
+  gui.add(uniforms.u_noiseScale, 'value', 1, 20).name('Noise Scale');
+  gui.add(uniforms.u_noiseSpeed, 'value', 0, 1).name('Noise Speed');
+  gui.add(uniforms.u_octaves, 'value', 1, 8).step(1).name('Octaves');
+  gui.add(uniforms.u_persistence, 'value', 0, 1).name('Persistence');
 }
 
 function onWindowResize() {
