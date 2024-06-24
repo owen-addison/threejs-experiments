@@ -27,6 +27,15 @@ function init() {
     fragmentShader: fragmentShader,
   });
 
+  const program = material.program;
+  if (program) {
+    const vertexErrors = renderer.getContext().getShaderInfoLog(program.getVertexShader());
+    const fragmentErrors = renderer.getContext().getShaderInfoLog(program.getFragmentShader());
+
+    if (vertexErrors) console.error('Vertex shader errors:\n', vertexErrors);
+    if (fragmentErrors) console.error('Fragment shader errors:\n', fragmentErrors);
+  }
+
   plane = new THREE.Mesh(geometry, material);
   scene.add(plane);
 
